@@ -25,9 +25,16 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public/dist')));
 
 app.use(routes);
 app.use(search);
+
+
+app.get('/', function (req, res, next) {
+  res.status(200).sendFile(path.join(__dirname+'/public/dist/index.html')); 
+
+});
+
 
 module.exports = app;
