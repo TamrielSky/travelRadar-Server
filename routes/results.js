@@ -9,7 +9,7 @@ var getReverseMapping = function () {
             '4d4b7105d754a06376d81259': 'bar',
             '4bf58dd8d48988d1ed931735': 'airport',
             '4bf58dd8d48988d196941735': 'hospital',
-            '4bf58dd8d48988d104941735': 'hospital', 
+            '4bf58dd8d48988d104941735': 'hospital',
             '52f2ab2ebcbc57f1066b8b56': 'atm',
             '4bf58dd8d48988d10a951735': 'atm',
             '4bf58dd8d48988d113951735': 'gas_station'
@@ -82,7 +82,7 @@ function getFourSquareCategory(categoryId, dictionary) {
 
     var count = 0;
     var dictIndex = 0;
-    var subCategory="place";
+    var subCategory = "place";
     for (count = 0; count < dictionary.length; count++) {
         recursiveArraySearch(dictionary[count], categoryId, function (found) {
             if (found) {
@@ -98,88 +98,92 @@ function getFourSquareCategory(categoryId, dictionary) {
     }
 }
 
-    var eliminateDuplicates = function (places) {
+var eliminateDuplicates = function (places) {
 
-        var newPlaces = [];
-        var placeList = [];
-        var count = 0;
+    var newPlaces = [];
+    var placeList = [];
+    var count = 0;
 
-        for (var i = 0; i < places.length; i++) {
+    for (var i = 0; i < places.length; i++) {
 
-            if (newPlaces[places[i].distance + "," + places[i].name]) {
+        if (newPlaces[places[i].distance + "," + places[i].name]) {
 
-                if (places[i].rating && places[i].review) {
-
-                    newPlaces[places[i].distance + "," + places[i].name] = places[i];
-
-                }
-
-            } else {
+            if (places[i].rating && places[i].review) {
 
                 newPlaces[places[i].distance + "," + places[i].name] = places[i];
 
             }
 
+        } else {
+
+            newPlaces[places[i].distance + "," + places[i].name] = places[i];
+
         }
-        for (var item in newPlaces) {
 
-            placeList[count++] = newPlaces[item];
+    }
+    for (var item in newPlaces) {
 
-        }
+        placeList[count++] = newPlaces[item];
 
-        return placeList;
     }
 
-    var calcDistance = function (lat1, lon1, lat2, lon2) {
+    return placeList;
+}
 
-        var R = 6371; // Radius of the earth in km
-        var dLat = deg2rad(lat2 - lat1);  // deg2rad below
-        var dLon = deg2rad(lon2 - lon1);
-        var a =
-            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-            Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
-            Math.sin(dLon / 2) * Math.sin(dLon / 2)
-            ;
-        var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        var d = R * c; // Distance in km
-        return d * 1000;
+var calcDistance = function (lat1, lon1, lat2, lon2) {
+
+    var R = 6371; // Radius of the earth in km
+    var dLat = deg2rad(lat2 - lat1);  // deg2rad below
+    var dLon = deg2rad(lon2 - lon1);
+    var a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2)
+        ;
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    var d = R * c; // Distance in km
+    return d * 1000;
 
 
-        function deg2rad(deg) {
-            return deg * (Math.PI / 180)
+    function deg2rad(deg) {
+        return deg * (Math.PI / 180)
+    }
+}
+
+var sortByProperty = function (places, property) {
+
+    return places.sort(function (a, b) {
+
+        if (a[property] == b[property]) {
+            return 0;
+        } else {
+            return a[property] < b[property] ? -1 : 1;
         }
-    }
 
-    var sortByProperty = function (places, property) {
+    });
+}
 
-        return places.sort(function (a, b) {
+var filterPlaces = function (places, filters, yelpDict, fourSquareDict) {
+    var placeList = [];
+    var count = 0;
 
-            if (a[property] == b[property]) {
-                return 0;
-            } else {
-                return a[property] < b[property] ? -1 : 1;
-            }
+    for (var resultCount = 0; resultCount < places.length; resultCount++) {
 
-        });
-    }
+        if (Object.prototype.toString.call(places[resultCount]) === '[object Object]') {
+            if (places[resultCount].businesses) {
 
-    var filterPlaces = function (places, filters, yelpDict, fourSquareDict) {
-        var placeList = [];
-        var count = 0;
+                for (var j = 0; j < places[resultCount].businesses.length; j++) {
+                    placeList[count] = {};
 
-        for (var resultCount = 0; resultCount < places.length; resultCount++) {
+                    var filter = getReverseMapping().yelpPlaceTypes[getYelpCategory(filters, places[resultCount].businesses[j].categories, yelpDict)];
 
-            if (Object.prototype.toString.call(places[resultCount]) === '[object Object]') {
-                if (places[resultCount].businesses) {
-
-                    for (var j = 0; j < places[resultCount].businesses.length; j++) {
-                        placeList[count] = {};
-
+                    if (filter) {
+                        placeList[count]["filter"] = filter;
 
                         placeList[count]["distance"] = ((places[resultCount].businesses[j].distance) * 0.000621371192).toFixed(2);
                         placeList[count]["name"] = places[resultCount].businesses[j].name;
 
-                         if(placeList[count]["name"].replace(/\s/g,'') == "LosPlanesDeRenderos"){
+                        if (placeList[count]["name"].replace(/\s/g, '') == "LosPlanesDeRenderos") {
                             console.log("found");
                         }
                         placeList[count]["contact"] = places[resultCount].businesses[j].display_phone;
@@ -198,18 +202,22 @@ function getFourSquareCategory(categoryId, dictionary) {
                         placeList[count]["datasrc"] = "yelp";
                         placeList[count]["place_id"] = places[resultCount].businesses[j].id;
                         placeList[count]["selected"] = false;
-                        placeList[count]["filter"] = getReverseMapping().yelpPlaceTypes[getYelpCategory(filters, places[resultCount].businesses[j].categories, yelpDict)];
                         count++;
-
                     }
+                }
 
-                } else {
+            } else {
 
-                    var placeItems = places[resultCount].response.groups[0].items;
+                var placeItems = places[resultCount].response.groups[0].items;
 
-                    for (var j = 0; j < placeItems.length; j++) {
+                for (var j = 0; j < placeItems.length; j++) {
 
-                        placeList[count] = {};
+                    placeList[count] = {};
+                    var filter = getReverseMapping().foursquarePlaceTypes[getFourSquareCategory(venue.categories[0].id, fourSquareDict)];
+                    if (filter) {
+
+                        placeList[count]["filter"] = filter;
+
                         var venue = placeItems[j].venue;
 
                         placeList[count]["distance"] = ((venue.location.distance) * 0.000621371192).toFixed(2);
@@ -226,7 +234,7 @@ function getFourSquareCategory(categoryId, dictionary) {
                         placeList[count]["rating"] = venue.rating ? (venue.rating * 5 / 10) : 0;
                         placeList[count]["name"] = venue.name;
 
-                        if(venue.name.replace(/\s/g,'') == "LosPlanesDeRenderos"){
+                        if (venue.name.replace(/\s/g, '') == "LosPlanesDeRenderos") {
                             console.log("found");
                         }
                         placeList[count]["location"] = { latitude: venue.location.lat, longitude: venue.location.lng };
@@ -237,14 +245,16 @@ function getFourSquareCategory(categoryId, dictionary) {
                         placeList[count]["datasrc"] = "foursquare";
                         placeList[count]["place_id"] = venue.id;
                         placeList[count]["selected"] = false;
-                        var category  = getFourSquareCategory(venue.categories[0].id, fourSquareDict);
-                        placeList[count]["filter"] = getReverseMapping().foursquarePlaceTypes[getFourSquareCategory(venue.categories[0].id, fourSquareDict)];
+                        var category = getFourSquareCategory(venue.categories[0].id, fourSquareDict);
 
                         count++;
-                    }
-                }
 
-            } /*else {
+                    }
+
+                }
+            }
+
+        } /*else {
 
                         var googlePlaces = places[resultCount];
 
@@ -266,20 +276,20 @@ function getFourSquareCategory(categoryId, dictionary) {
                         }
 
                     }*/
-        }
-
-        return placeList;
     }
 
+    return placeList;
+}
 
 
 
-    module.exports = {
-        sortByProperty: sortByProperty,
-        calcDistance: calcDistance,
-        eliminateDuplicates: eliminateDuplicates,
-        filterPlaces: filterPlaces,
-        getYelpCategory: getYelpCategory,
-        getFourSquareCategory: getFourSquareCategory
-    }
+
+module.exports = {
+    sortByProperty: sortByProperty,
+    calcDistance: calcDistance,
+    eliminateDuplicates: eliminateDuplicates,
+    filterPlaces: filterPlaces,
+    getYelpCategory: getYelpCategory,
+    getFourSquareCategory: getFourSquareCategory
+}
 
