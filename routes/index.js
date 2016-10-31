@@ -162,7 +162,7 @@ router.post('/search', function (req, res, next) {
 
     var results = resultProcessor.eliminateDuplicates(resultProcessor.filterPlaces(resultList, items[1], yelpCategories, foursquareCategories.response.categories));
 
-    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:9000');
+    res.setHeader('Access-Control-Allow-Origin', 'http://travelradar.us');
 
     // Request methods you wish to allow
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
