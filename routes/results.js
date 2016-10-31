@@ -173,11 +173,12 @@ var filterPlaces = function (places, filters, yelpDict, fourSquareDict) {
             if (places[resultCount].businesses) {
 
                 for (var j = 0; j < places[resultCount].businesses.length; j++) {
-                    placeList[count] = {};
 
                     var filter = getReverseMapping().yelpPlaceTypes[getYelpCategory(filters, places[resultCount].businesses[j].categories, yelpDict)];
 
                     if (filter) {
+                        placeList[count] = {};
+
                         placeList[count]["filter"] = filter;
 
                         placeList[count]["distance"] = ((places[resultCount].businesses[j].distance) * 0.000621371192).toFixed(2);
@@ -212,9 +213,10 @@ var filterPlaces = function (places, filters, yelpDict, fourSquareDict) {
 
                 for (var j = 0; j < placeItems.length; j++) {
 
-                    placeList[count] = {};
-                    var filter = getReverseMapping().foursquarePlaceTypes[getFourSquareCategory(venue.categories[0].id, fourSquareDict)];
+                    var filter = getReverseMapping().foursquarePlaceTypes[getFourSquareCategory(placeItems[j].venue.categories[0].id, fourSquareDict)];
                     if (filter) {
+                        placeList[count] = {};
+
 
                         placeList[count]["filter"] = filter;
 
@@ -245,8 +247,6 @@ var filterPlaces = function (places, filters, yelpDict, fourSquareDict) {
                         placeList[count]["datasrc"] = "foursquare";
                         placeList[count]["place_id"] = venue.id;
                         placeList[count]["selected"] = false;
-                        var category = getFourSquareCategory(venue.categories[0].id, fourSquareDict);
-
                         count++;
 
                     }
